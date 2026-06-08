@@ -3,13 +3,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class UvicornConfig(BaseModel):
-    host: str = "127.0.0.1"
-    port: int = 8000
-    reload: bool = True
+    host: str
+    port: int
+    reload: bool
 
 
 class Settings(BaseSettings):
-    uc: UvicornConfig = UvicornConfig()
+    uc: UvicornConfig
 
     model_config = SettingsConfigDict(
         env_file=(".env.example", ".env"),
