@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     uc: UvicornConfig = UvicornConfig()
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env.example", ".env"),
         case_sensitive=False,
         env_prefix="APP_",
         env_nested_delimiter="_"
