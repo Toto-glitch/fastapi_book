@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class BookBase(BaseModel):
-    title: str = Field(..., min_length=5, max_length=255)
+    title: str = Field(..., max_length=255)
     price: Decimal = Field(..., decimal_places=2, max_digits=10, gt=0)
     amount: int = Field(..., ge=0)
 
