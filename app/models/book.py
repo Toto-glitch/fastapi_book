@@ -4,7 +4,6 @@ from decimal import Decimal
 from datetime import datetime
 
 from core import Base
-from .associations import book_genres_table
 
 
 class Book(Base):
@@ -18,4 +17,3 @@ class Book(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     author: Mapped['Author'] = relationship("Author", back_populates="books")
-    genres: Mapped[list['Genre']] = relationship(secondary=book_genres_table, back_populates="genres")
