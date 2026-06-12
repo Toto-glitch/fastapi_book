@@ -30,3 +30,9 @@ class BaseRepository:
         await self.session.delete(model_object)
         await self.session.commit()
 
+    async def update(self, object_id: int, **kwargs):
+        model_object = await self.get_by_id(object_id)
+        for key, value in kwargs.items():
+            setattr(model_object, key, value)
+        await self.session.commit()
+        return model_object
