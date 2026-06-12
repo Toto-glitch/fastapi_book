@@ -25,3 +25,8 @@ class BaseRepository:
         model_object = query_result.scalar_one_or_none()
         return model_object
 
+    async def remove(self, object_id: int):
+        model_object = await self.get_by_id(object_id)
+        await self.session.delete(model_object)
+        await self.session.commit()
+
