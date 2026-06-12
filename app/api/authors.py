@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, APIRouter, HTTPException, Query
 
 from repositories import AuthorRepository
-from schemas import AuthorResponse, AuthorCreate
+from schemas import AuthorResponse, AuthorCreate, AuthorUpdate
 from core import get_session
 
 
@@ -31,6 +31,16 @@ async def remove_author(
 ):
     await repo.remove(author_id)
     return {"message": "Author removed", "author_id": author_id}
+
+
+@authors_router.patch("/{author_id}")
+async def update_author(
+        author_id: int,
+        new_data: AuthorUpdate,
+        repo: AuthorRepository = Depends(get_author_repository)
+):
+    new_author = await repo.update(author_id, **new_data.model_dump(exclude_unset=True))
+    return {"message": "Author updated", "new_author": AuthorResponse.model_validate(new_author)}
 
 
 @authors_router.get("/{author_id}")
