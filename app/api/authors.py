@@ -24,7 +24,7 @@ async def get_authors(
     return result
 
 
-@authors_router.delete("")
+@authors_router.delete("/{author_id}")
 async def remove_author(
         author_id: int,
         repo: AuthorRepository = Depends(get_author_repository)
