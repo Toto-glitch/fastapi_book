@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from decimal import Decimal
 from datetime import datetime
 
@@ -17,3 +17,5 @@ class BookResponse(BookBase):
     id: int
     author: "AuthorResponse"
     created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
