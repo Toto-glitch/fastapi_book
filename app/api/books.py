@@ -24,7 +24,7 @@ async def get_books(
     return result
 
 
-@books_router.delete("")
+@books_router.delete("/{book_id}")
 async def remove_book(
         book_id: int,
         repo: BookRepository = Depends(get_book_repository)
