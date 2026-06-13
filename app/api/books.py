@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core import get_session
 from repositories import BookRepository
-from schemas import BookCreate, BookResponse
+from schemas import BookCreate, BookResponse, BookUpdate
 
 
 async def get_book_repository(session: AsyncSession = Depends(get_session)) -> BookRepository:
@@ -22,6 +22,19 @@ async def get_books(
     books = await repo.get_all(offset=page - 1, limit=limit)
     result = [BookResponse.model_validate(book) for book in books]
     return result
+
+
+@books_router.patch("/{book_id}")
+async def update_book(
+        book_id: int,
+        new_data: BookUpdate,
+        repo: BookRepository = Depends(get_book_repository)
+):
+    book = await repo.get_by_id(book_id)
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    new_book = await repo.update(book_id, **new_data.model_dump(exclude_unset=True))
+    return {"message": "Book updated", "new_book": BookResponse.model_validate(new_book)}
 
 
 @books_router.delete("/{book_id}")
