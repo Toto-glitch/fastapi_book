@@ -29,6 +29,9 @@ async def remove_author(
         author_id: int,
         repo: AuthorRepository = Depends(get_author_repository)
 ):
+    author = await repo.get_by_id(author_id)
+    if not author:
+        raise HTTPException(status_code=404, detail="Author not found")
     await repo.remove(author_id)
     return {"message": "Author removed", "author_id": author_id}
 
@@ -39,6 +42,9 @@ async def update_author(
         new_data: AuthorUpdate,
         repo: AuthorRepository = Depends(get_author_repository)
 ):
+    author = await repo.get_by_id(author_id)
+    if not author:
+        raise HTTPException(status_code=404, detail="Author not found")
     new_author = await repo.update(author_id, **new_data.model_dump(exclude_unset=True))
     return {"message": "Author updated", "new_author": AuthorResponse.model_validate(new_author)}
 
