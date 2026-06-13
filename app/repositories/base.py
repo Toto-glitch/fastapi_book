@@ -35,4 +35,5 @@ class BaseRepository:
         for key, value in kwargs.items():
             setattr(model_object, key, value)
         await self.session.commit()
+        await self.session.refresh(model_object)
         return model_object
