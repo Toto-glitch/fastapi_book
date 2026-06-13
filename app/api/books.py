@@ -29,6 +29,9 @@ async def remove_book(
         book_id: int,
         repo: BookRepository = Depends(get_book_repository)
 ):
+    book = await repo.get_by_id(book_id)
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
     await repo.remove(book_id)
     return {"message": "Book removed", "book_id": book_id}
 
