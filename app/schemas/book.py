@@ -19,3 +19,11 @@ class BookResponse(BookBase):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class BookUpdate(BaseModel):
+    title: str | None = Field(None, max_length=255)
+    author_id: int | None = Field(None)
+    price: Decimal | None = Field(None, decimal_places=2, max_digits=10, gt=0)
+    amount: int | None = Field(None, ge=0)
+
