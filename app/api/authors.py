@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, APIRouter, HTTPException, Query
 
 from repositories import AuthorRepository
-from schemas import AuthorResponse, AuthorCreate, AuthorUpdate
+from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse
 from core import get_session
 
 
@@ -23,6 +23,18 @@ async def get_authors(
 ):
     authors = await repo.get_all(offset=page - 1, limit=limit)
     result = [AuthorResponse.model_validate(author) for author in authors]
+    return result
+
+
+@authors_router.get("/{author_id}/books")
+async def get_author_books(
+        author_id: int,
+        page: int = Query(1),
+        limit: int = Query(20),
+        repo: AuthorRepository = Depends(get_author_repository)
+):
+    books = await repo.get_books(author_id, offset=page - 1, limit=limit)
+    result = [BookResponse.model_validate(book) for book in books]
     return result
 
 
