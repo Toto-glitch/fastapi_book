@@ -1,16 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from core import get_session
 from repositories import BookRepository
 from schemas import BookCreate, BookResponse, BookUpdate
-
-
-async def get_book_repository(
-    session: AsyncSession = Depends(get_session),
-) -> BookRepository:
-    return BookRepository(session)
-
+from dependencies import get_book_repository
 
 books_router = APIRouter(prefix="/books", tags=["Books"])
 

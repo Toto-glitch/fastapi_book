@@ -1,16 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, APIRouter, HTTPException, Query
 
 from repositories import AuthorRepository
 from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse
-from core import get_session
-
-
-async def get_author_repository(
-    session: AsyncSession = Depends(get_session),
-) -> AuthorRepository:
-    return AuthorRepository(session)
-
+from dependencies import get_author_repository
 
 authors_router = APIRouter(prefix="/authors", tags=["Authors"])
 
