@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 
 class BaseRepository:
@@ -26,12 +26,15 @@ class BaseRepository:
         return model_object
 
     async def remove(self, object_id: int):
-        model_object = await self.get_by_id(object_id)
-        await self.session.delete(model_object)
+        query = delete(self.model).filter_by(id=object_id).returning(self.model.id)
+        query_result = await self.session.execute(query)
         await self.session.commit()
+        return query_result.scalar_one_or_none()
 
     async def update(self, object_id: int, **kwargs):
         model_object = await self.get_by_id(object_id)
+        if model_object is None:
+            return None
         for key, value in kwargs.items():
             setattr(model_object, key, value)
         await self.session.commit()

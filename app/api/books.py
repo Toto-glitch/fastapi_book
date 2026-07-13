@@ -23,10 +23,9 @@ async def update_book(
     new_data: BookUpdate,
     repo: BookRepository = Depends(get_book_repository),
 ):
-    book = await repo.get_by_id(book_id)
-    if not book:
-        raise HTTPException(status_code=404, detail="Book not found")
     new_book = await repo.update(book_id, **new_data.model_dump(exclude_unset=True))
+    if new_book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
     return {
         "message": "Book updated",
         "new_book": BookResponse.model_validate(new_book),
@@ -37,10 +36,9 @@ async def update_book(
 async def remove_book(
     book_id: int, repo: BookRepository = Depends(get_book_repository)
 ):
-    book = await repo.get_by_id(book_id)
-    if not book:
+    returning_id = await repo.remove(book_id)
+    if returning_id is None:
         raise HTTPException(status_code=404, detail="Book not found")
-    await repo.remove(book_id)
     return {"message": "Book removed", "book_id": book_id}
 
 
