@@ -11,7 +11,7 @@ class BaseRepository:
     async def add(self, **kwargs) -> int:
         model_object = self.model(**kwargs)
         self.session.add(model_object)
-        await self.session.commit()
+        await self.session.flush()
         return model_object.id
 
     async def get_all(self, offset: int = 0, limit: int = 20):
@@ -28,7 +28,7 @@ class BaseRepository:
     async def remove(self, object_id: int):
         query = delete(self.model).filter_by(id=object_id).returning(self.model.id)
         query_result = await self.session.execute(query)
-        await self.session.commit()
+        await self.session.flush()
         return query_result.scalar_one_or_none()
 
     async def update(self, object_id: int, **kwargs):
@@ -37,6 +37,6 @@ class BaseRepository:
             return None
         for key, value in kwargs.items():
             setattr(model_object, key, value)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(model_object)
         return model_object
