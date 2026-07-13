@@ -1,19 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 
 from repositories import BookRepository
-from schemas import BookCreate, BookResponse, BookUpdate
-from dependencies import get_book_repository
+from schemas import BookCreate, BookResponse, BookUpdate, PaginationParams
+from dependencies import get_book_repository, get_pagination_params
 
 books_router = APIRouter(prefix="/books", tags=["Books"])
 
 
 @books_router.get("")
 async def get_books(
-    page: int = Query(1),
-    limit: int = Query(20),
+    pagination: PaginationParams = Depends(get_pagination_params),
     repo: BookRepository = Depends(get_book_repository),
 ):
-    books = await repo.get_all(offset=page - 1, limit=limit)
+    books = await repo.get_all(offset=pagination.offset, limit=pagination.limit)
     result = [BookResponse.model_validate(book) for book in books]
     return result
 

@@ -1,5 +1,6 @@
 from .author import AuthorCreate, AuthorResponse, AuthorUpdate
 from .book import BookCreate, BookResponse, BookUpdate
+from .pagination import PaginationParams
 
 BookResponse.model_rebuild()
 __all__ = (
@@ -9,4 +10,5 @@ __all__ = (
     "BookResponse",
     "AuthorUpdate",
     "BookUpdate",
+    "PaginationParams"
 )

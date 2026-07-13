@@ -1,19 +1,18 @@
-from fastapi import Depends, APIRouter, HTTPException, Query
+from fastapi import Depends, APIRouter, HTTPException
 
 from repositories import AuthorRepository
-from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse
-from dependencies import get_author_repository
+from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse, PaginationParams
+from dependencies import get_author_repository, get_pagination_params
 
 authors_router = APIRouter(prefix="/authors", tags=["Authors"])
 
 
 @authors_router.get("")
 async def get_authors(
-    page: int = Query(1),
-    limit: int = Query(20),
+    pagination: PaginationParams = Depends(get_pagination_params),
     repo: AuthorRepository = Depends(get_author_repository),
 ):
-    authors = await repo.get_all(offset=page - 1, limit=limit)
+    authors = await repo.get_all(offset=pagination.offset, limit=pagination.limit)
     result = [AuthorResponse.model_validate(author) for author in authors]
     return result
 
@@ -21,11 +20,10 @@ async def get_authors(
 @authors_router.get("/{author_id}/books")
 async def get_author_books(
         author_id: int,
-        page: int = Query(1),
-        limit: int = Query(20),
+        pagination: PaginationParams = Depends(get_pagination_params),
         repo: AuthorRepository = Depends(get_author_repository)
 ):
-    books = await repo.get_books(author_id, offset=page - 1, limit=limit)
+    books = await repo.get_books(author_id, offset=pagination.offset, limit=pagination.limit)
     result = [BookResponse.model_validate(book) for book in books]
     return result
 
