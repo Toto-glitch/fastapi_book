@@ -6,7 +6,9 @@ from repositories import BookRepository
 from schemas import BookCreate, BookResponse, BookUpdate
 
 
-async def get_book_repository(session: AsyncSession = Depends(get_session)) -> BookRepository:
+async def get_book_repository(
+    session: AsyncSession = Depends(get_session),
+) -> BookRepository:
     return BookRepository(session)
 
 
@@ -15,9 +17,9 @@ books_router = APIRouter(prefix="/books", tags=["Books"])
 
 @books_router.get("")
 async def get_books(
-        page: int = Query(1),
-        limit: int = Query(20),
-        repo: BookRepository = Depends(get_book_repository)
+    page: int = Query(1),
+    limit: int = Query(20),
+    repo: BookRepository = Depends(get_book_repository),
 ):
     books = await repo.get_all(offset=page - 1, limit=limit)
     result = [BookResponse.model_validate(book) for book in books]
@@ -26,21 +28,23 @@ async def get_books(
 
 @books_router.patch("/{book_id}")
 async def update_book(
-        book_id: int,
-        new_data: BookUpdate,
-        repo: BookRepository = Depends(get_book_repository)
+    book_id: int,
+    new_data: BookUpdate,
+    repo: BookRepository = Depends(get_book_repository),
 ):
     book = await repo.get_by_id(book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
     new_book = await repo.update(book_id, **new_data.model_dump(exclude_unset=True))
-    return {"message": "Book updated", "new_book": BookResponse.model_validate(new_book)}
+    return {
+        "message": "Book updated",
+        "new_book": BookResponse.model_validate(new_book),
+    }
 
 
 @books_router.delete("/{book_id}")
 async def remove_book(
-        book_id: int,
-        repo: BookRepository = Depends(get_book_repository)
+    book_id: int, repo: BookRepository = Depends(get_book_repository)
 ):
     book = await repo.get_by_id(book_id)
     if not book:
@@ -50,7 +54,9 @@ async def remove_book(
 
 
 @books_router.get("/{book_id}")
-async def get_book_by_id(book_id: int, repo: BookRepository = Depends(get_book_repository)):
+async def get_book_by_id(
+    book_id: int, repo: BookRepository = Depends(get_book_repository)
+):
     book = await repo.get_by_id(book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -58,6 +64,8 @@ async def get_book_by_id(book_id: int, repo: BookRepository = Depends(get_book_r
 
 
 @books_router.post("")
-async def create_book(book_data: BookCreate, repo: BookRepository = Depends(get_book_repository)):
+async def create_book(
+    book_data: BookCreate, repo: BookRepository = Depends(get_book_repository)
+):
     book_id = await repo.add(**book_data.model_dump())
     return {"message": "Book created", "book_id": book_id}

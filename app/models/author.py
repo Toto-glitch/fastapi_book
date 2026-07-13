@@ -13,4 +13,6 @@ class Author(Base):
     father_name: Mapped[str | None] = mapped_column(String(255))
     birth_year: Mapped[int | None]
 
-    books: Mapped[list['Book']] = relationship("Book", back_populates="author", cascade="all, delete-orphan")
+    books: Mapped[list["Book"]] = relationship(
+        "Book", back_populates="author", cascade="all, delete-orphan"
+    )

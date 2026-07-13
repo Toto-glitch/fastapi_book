@@ -31,7 +31,7 @@ class Settings(BaseSettings):
         env_file=(".env.example", ".env"),
         case_sensitive=False,
         env_prefix="APP__",
-        env_nested_delimiter="__"
+        env_nested_delimiter="__",
     )
 
 

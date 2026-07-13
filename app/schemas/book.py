@@ -26,4 +26,3 @@ class BookUpdate(BaseModel):
     author_id: int | None = Field(None)
     price: Decimal | None = Field(None, decimal_places=2, max_digits=10, gt=0)
     amount: int | None = Field(None, ge=0)
-
