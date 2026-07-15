@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, Sequence
-from typing import Generic, TypeVar
+from sqlalchemy import select, delete
+from typing import Generic, TypeVar, Sequence
 
 from models import Base
 

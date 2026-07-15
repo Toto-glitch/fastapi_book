@@ -1,4 +1,5 @@
-from sqlalchemy import Sequence, select
+from sqlalchemy import select
+from typing import Sequence
 
 from .base import BaseRepository
 from models import Author, Book
