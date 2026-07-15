@@ -2,7 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 
 from repositories import BookRepository
-from schemas import BookCreate, BookResponse, BookUpdate, PaginationParams, ListResponse, DeleteResponse
+from schemas import (
+    BookCreate,
+    BookResponse,
+    BookUpdate,
+    PaginationParams,
+    ListResponse,
+    DeleteResponse,
+)
 from dependencies import get_book_repository, get_pagination_params
 
 books_router = APIRouter(prefix="/books", tags=["Books"])

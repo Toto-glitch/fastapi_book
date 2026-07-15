@@ -2,7 +2,15 @@ from fastapi import Depends, APIRouter, HTTPException
 from typing import Annotated
 
 from repositories import AuthorRepository
-from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse, PaginationParams, ListResponse, DeleteResponse
+from schemas import (
+    AuthorResponse,
+    AuthorCreate,
+    AuthorUpdate,
+    BookResponse,
+    PaginationParams,
+    ListResponse,
+    DeleteResponse,
+)
 from dependencies import get_author_repository, get_pagination_params
 
 authors_router = APIRouter(prefix="/authors", tags=["Authors"])
@@ -19,23 +27,25 @@ async def get_authors(
         items=[AuthorResponse.model_validate(author) for author in authors],
         total=total,
         page=pagination.page,
-        limit=pagination.limit
+        limit=pagination.limit,
     )
 
 
 @authors_router.get("/{author_id}/books")
 async def get_author_books(
-        author_id: int,
-        pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
-        repo: Annotated[AuthorRepository, Depends(get_author_repository)],
+    author_id: int,
+    pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+    repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> ListResponse[BookResponse]:
-    books = await repo.get_books(author_id, offset=pagination.offset, limit=pagination.limit)
+    books = await repo.get_books(
+        author_id, offset=pagination.offset, limit=pagination.limit
+    )
     total = await repo.count_books(author_id)
     return ListResponse(
         items=[BookResponse.model_validate(book) for book in books],
         total=total,
         page=pagination.page,
-        limit=pagination.limit
+        limit=pagination.limit,
     )
 
 
@@ -73,7 +83,8 @@ async def get_author_by_id(
 
 @authors_router.post("")
 async def create_author(
-    author_data: AuthorCreate, repo: Annotated[AuthorRepository, Depends(get_author_repository)]
+    author_data: AuthorCreate,
+    repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> AuthorResponse:
     author = await repo.add(**author_data.model_dump())
     return AuthorResponse.model_validate(author)
