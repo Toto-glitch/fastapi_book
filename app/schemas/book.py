@@ -1,6 +1,10 @@
 from pydantic import BaseModel, Field, ConfigDict
 from decimal import Decimal
 from datetime import datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .author import AuthorResponse
 
 
 class BookBase(BaseModel):
