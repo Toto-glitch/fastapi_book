@@ -3,7 +3,7 @@ from sqlalchemy import String, ForeignKey, func
 from decimal import Decimal
 from datetime import datetime
 
-from core import Base
+from .base import Base
 
 
 class Book(Base):

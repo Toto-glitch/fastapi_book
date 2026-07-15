@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
 
-from core import Base
+from .base import Base
 
 
 class Author(Base):
