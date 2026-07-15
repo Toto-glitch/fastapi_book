@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from typing import Generic, TypeVar, Sequence
+from typing import Generic, TypeVar, Sequence, Any
 
 from models import Base
 
@@ -13,7 +13,7 @@ class BaseRepository(Generic[ModelType]):
     def __init__(self, db_session: AsyncSession):
         self.session: AsyncSession = db_session
 
-    async def add(self, **kwargs) -> int:
+    async def add(self, **kwargs: Any) -> int:
         model_object = self.model(**kwargs)
         self.session.add(model_object)
         await self.session.flush()
@@ -36,7 +36,7 @@ class BaseRepository(Generic[ModelType]):
         await self.session.flush()
         return query_result.scalar_one_or_none()
 
-    async def update(self, object_id: int, **kwargs) -> ModelType | None:
+    async def update(self, object_id: int, **kwargs: Any) -> ModelType | None:
         model_object = await self.get_by_id(object_id)
         if model_object is None:
             return None
