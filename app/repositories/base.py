@@ -11,14 +11,14 @@ ModelType = TypeVar("ModelType", bound=Base)
 class BaseRepository(Generic[ModelType]):
     model: type[ModelType]
 
-    def __init__(self, db_session: AsyncSession):
+    def __init__(self, db_session: AsyncSession) -> None:
         self.session: AsyncSession = db_session
 
-    async def add(self, **kwargs: Any) -> int:
+    async def add(self, **kwargs: Any) -> ModelType:
         model_object = self.model(**kwargs)
         self.session.add(model_object)
         await self.session.flush()
-        return model_object.id
+        return model_object
 
     async def get_all(self, offset: int = 0, limit: int = 20) -> Sequence[ModelType]:
         query = select(self.model).offset(offset).limit(limit)
