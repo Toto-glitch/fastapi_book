@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey, func
+from sqlalchemy import String, ForeignKey, func, Numeric
 from decimal import Decimal
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -16,7 +16,7 @@ class Book(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
     author_id: Mapped[int] = mapped_column(ForeignKey("authors.id"))
-    price: Mapped[Decimal]
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     amount: Mapped[int]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
