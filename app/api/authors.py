@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException
 
 from repositories import AuthorRepository
-from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse, PaginationParams
+from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse, PaginationParams, ListResponse, DeleteResponse
 from dependencies import get_author_repository, get_pagination_params
 
 authors_router = APIRouter(prefix="/authors", tags=["Authors"])
@@ -11,10 +11,15 @@ authors_router = APIRouter(prefix="/authors", tags=["Authors"])
 async def get_authors(
     pagination: PaginationParams = Depends(get_pagination_params),
     repo: AuthorRepository = Depends(get_author_repository),
-):
+) -> ListResponse[AuthorResponse]:
     authors = await repo.get_all(offset=pagination.offset, limit=pagination.limit)
-    result = [AuthorResponse.model_validate(author) for author in authors]
-    return result
+    total = await repo.count()
+    return ListResponse(
+        items=[AuthorResponse.model_validate(author) for author in authors],
+        total=total,
+        page=pagination.page,
+        limit=pagination.limit
+    )
 
 
 @authors_router.get("/{author_id}/books")
@@ -22,20 +27,25 @@ async def get_author_books(
         author_id: int,
         pagination: PaginationParams = Depends(get_pagination_params),
         repo: AuthorRepository = Depends(get_author_repository)
-):
+) -> ListResponse[BookResponse]:
     books = await repo.get_books(author_id, offset=pagination.offset, limit=pagination.limit)
-    result = [BookResponse.model_validate(book) for book in books]
-    return result
+    total = await repo.count_books(author_id)
+    return ListResponse(
+        items=[BookResponse.model_validate(book) for book in books],
+        total=total,
+        page=pagination.page,
+        limit=pagination.limit
+    )
 
 
 @authors_router.delete("/{author_id}")
 async def remove_author(
     author_id: int, repo: AuthorRepository = Depends(get_author_repository)
-):
+) -> DeleteResponse:
     returning_id = await repo.remove(author_id)
     if returning_id is None:
         raise HTTPException(status_code=404, detail="Author not found")
-    return {"message": "Author removed", "author_id": author_id}
+    return DeleteResponse(message="Author removed", id=returning_id)
 
 
 @authors_router.patch("/{author_id}")
@@ -43,20 +53,17 @@ async def update_author(
     author_id: int,
     new_data: AuthorUpdate,
     repo: AuthorRepository = Depends(get_author_repository),
-):
+) -> AuthorResponse:
     new_author = await repo.update(author_id, **new_data.model_dump(exclude_unset=True))
     if new_author is None:
         raise HTTPException(status_code=404, detail="Author not found")
-    return {
-        "message": "Author updated",
-        "new_author": AuthorResponse.model_validate(new_author),
-    }
+    return AuthorResponse.model_validate(new_author)
 
 
 @authors_router.get("/{author_id}")
 async def get_author_by_id(
     author_id: int, repo: AuthorRepository = Depends(get_author_repository)
-):
+) -> AuthorResponse:
     author = await repo.get_by_id(author_id)
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")
@@ -66,6 +73,6 @@ async def get_author_by_id(
 @authors_router.post("")
 async def create_author(
     author_data: AuthorCreate, repo: AuthorRepository = Depends(get_author_repository)
-):
-    author_id = await repo.add(**author_data.model_dump())
-    return {"message": "Author created", "author_id": author_id}
+) -> AuthorResponse:
+    author = await repo.add(**author_data.model_dump())
+    return AuthorResponse.model_validate(author)
