@@ -1,6 +1,17 @@
 [tool.poetry]
 package-mode = false
 
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+pretty = true
+exclude = ["tests/", "migration/"]
+
 [tool.poetry.dependencies]
 python = "^3.14"
 fastapi = "^0.136.3"
