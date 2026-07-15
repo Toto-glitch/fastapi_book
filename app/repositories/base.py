@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
+from sqlalchemy import func
 from typing import Generic, TypeVar, Sequence, Any
 
 from models import Base
@@ -45,3 +46,8 @@ class BaseRepository(Generic[ModelType]):
         await self.session.flush()
         await self.session.refresh(model_object)
         return model_object
+
+    async def count(self) -> int:
+        query = select(func.count()).select_from(self.model)
+        query_result = await self.session.execute(query)
+        return query_result.scalar_one()
