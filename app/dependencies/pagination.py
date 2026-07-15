@@ -1,9 +1,11 @@
 from fastapi import Query
+from typing import Annotated
+
 from schemas import PaginationParams
 
 
 def get_pagination_params(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
+    page: Annotated[int, Query(ge=1)] = 1,
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
 ) -> PaginationParams:
     return PaginationParams(page=page, limit=limit)

@@ -1,4 +1,5 @@
 from fastapi import Depends, APIRouter, HTTPException
+from typing import Annotated
 
 from repositories import AuthorRepository
 from schemas import AuthorResponse, AuthorCreate, AuthorUpdate, BookResponse, PaginationParams, ListResponse, DeleteResponse
@@ -9,8 +10,8 @@ authors_router = APIRouter(prefix="/authors", tags=["Authors"])
 
 @authors_router.get("")
 async def get_authors(
-    pagination: PaginationParams = Depends(get_pagination_params),
-    repo: AuthorRepository = Depends(get_author_repository),
+    pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+    repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> ListResponse[AuthorResponse]:
     authors = await repo.get_all(offset=pagination.offset, limit=pagination.limit)
     total = await repo.count()
@@ -25,8 +26,8 @@ async def get_authors(
 @authors_router.get("/{author_id}/books")
 async def get_author_books(
         author_id: int,
-        pagination: PaginationParams = Depends(get_pagination_params),
-        repo: AuthorRepository = Depends(get_author_repository)
+        pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+        repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> ListResponse[BookResponse]:
     books = await repo.get_books(author_id, offset=pagination.offset, limit=pagination.limit)
     total = await repo.count_books(author_id)
@@ -40,7 +41,7 @@ async def get_author_books(
 
 @authors_router.delete("/{author_id}")
 async def remove_author(
-    author_id: int, repo: AuthorRepository = Depends(get_author_repository)
+    author_id: int, repo: Annotated[AuthorRepository, Depends(get_author_repository)]
 ) -> DeleteResponse:
     returning_id = await repo.remove(author_id)
     if returning_id is None:
@@ -52,7 +53,7 @@ async def remove_author(
 async def update_author(
     author_id: int,
     new_data: AuthorUpdate,
-    repo: AuthorRepository = Depends(get_author_repository),
+    repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> AuthorResponse:
     new_author = await repo.update(author_id, **new_data.model_dump(exclude_unset=True))
     if new_author is None:
@@ -62,7 +63,7 @@ async def update_author(
 
 @authors_router.get("/{author_id}")
 async def get_author_by_id(
-    author_id: int, repo: AuthorRepository = Depends(get_author_repository)
+    author_id: int, repo: Annotated[AuthorRepository, Depends(get_author_repository)]
 ) -> AuthorResponse:
     author = await repo.get_by_id(author_id)
     if not author:
@@ -72,7 +73,7 @@ async def get_author_by_id(
 
 @authors_router.post("")
 async def create_author(
-    author_data: AuthorCreate, repo: AuthorRepository = Depends(get_author_repository)
+    author_data: AuthorCreate, repo: Annotated[AuthorRepository, Depends(get_author_repository)]
 ) -> AuthorResponse:
     author = await repo.add(**author_data.model_dump())
     return AuthorResponse.model_validate(author)
