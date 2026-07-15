@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from typing import Sequence
 
 from .base import BaseRepository
@@ -12,3 +12,8 @@ class AuthorRepository(BaseRepository[Author]):
         query = select(Book).filter_by(author_id=author_id).offset(offset).limit(limit)
         query_result = await self.session.execute(query)
         return query_result.scalars().all()
+
+    async def count_books(self, author_id: int) -> int:
+        query = select(func.count()).select_from(Book).filter_by(author_id=author_id)
+        query_result = await self.session.execute(query)
+        return query_result.scalar_one()
