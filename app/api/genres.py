@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 
 from dependencies import get_pagination_params, get_genre_repository
-from schemas import PaginationParams, ListResponse, GenreResponse, GenreCreate, GenreUpdate
+from schemas import PaginationParams, ListResponse, GenreResponse, GenreCreate, GenreUpdate, DeleteResponse
 from repositories import GenreRepository
 
 genres_router = APIRouter(prefix="/genres", tags=["Genres"])
@@ -29,4 +29,15 @@ async def create_genre(
         repo: Annotated[GenreRepository, Depends(get_genre_repository)]
 ) -> GenreResponse:
     genre = await repo.add(**genre_data.model_dump())
+    return GenreResponse.model_validate(genre)
+
+
+@genres_router.get("/{genre_id}")
+async def get_genre_by_id(
+        genre_id: int,
+        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+) -> GenreResponse:
+    genre = await repo.get_by_id(genre_id)
+    if genre is None:
+        raise HTTPException(status_code=404, detail="Genre not found")
     return GenreResponse.model_validate(genre)
