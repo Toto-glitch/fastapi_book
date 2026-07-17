@@ -3,7 +3,7 @@ from fastapi import Depends
 from typing import Annotated
 
 from core import get_session
-from repositories import AuthorRepository, BookRepository
+from repositories import AuthorRepository, BookRepository, GenreRepository
 
 
 async def get_author_repository(
@@ -16,3 +16,9 @@ async def get_book_repository(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> BookRepository:
     return BookRepository(session)
+
+
+async def get_genre_repository(
+    session: Annotated[AsyncSession, Depends(get_session)]
+) -> GenreRepository:
+    return GenreRepository(session)
