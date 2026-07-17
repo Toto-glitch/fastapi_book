@@ -41,3 +41,15 @@ async def get_genre_by_id(
     if genre is None:
         raise HTTPException(status_code=404, detail="Genre not found")
     return GenreResponse.model_validate(genre)
+
+
+@genres_router.patch("/{genre_id}")
+async def update_genre(
+        genre_id: int,
+        new_data: GenreUpdate,
+        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+) -> GenreResponse:
+    new_genre = await repo.update(genre_id, **new_data.model_dump(exclude_unset=True))
+    if new_genre is None:
+        raise HTTPException(status_code=404, detail="Genre not found")
+    return GenreResponse.model_validate(new_genre)
