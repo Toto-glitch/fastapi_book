@@ -53,3 +53,14 @@ async def update_genre(
     if new_genre is None:
         raise HTTPException(status_code=404, detail="Genre not found")
     return GenreResponse.model_validate(new_genre)
+
+
+@genres_router.delete("/{genre_id}")
+async def remove_genre(
+        genre_id: int,
+        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+) -> DeleteResponse:
+    returning_id = await repo.remove(genre_id)
+    if returning_id is None:
+        raise HTTPException(status_code=404, detail="Genre not found")
+    return DeleteResponse(message="Genre removed", id=returning_id)
