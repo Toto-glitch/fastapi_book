@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class GenreBase(BaseModel):
     name: str = Field(..., max_length=255)
-    description: str | None = None
+    description: str | None
 
 
 class GenreCreate(GenreBase):
