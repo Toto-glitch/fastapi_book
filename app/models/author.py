@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 class Author(Base):
     __tablename__ = "authors"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(String(255))
     last_name: Mapped[str] = mapped_column(String(255))
     father_name: Mapped[str | None] = mapped_column(String(255))

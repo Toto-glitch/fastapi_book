@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 class Book(Base):
     __tablename__ = "books"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
     author_id: Mapped[int] = mapped_column(ForeignKey("authors.id"))
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
