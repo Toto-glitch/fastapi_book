@@ -17,7 +17,16 @@ async def get_genres(
     total = await repo.count()
     return ListResponse(
         items=[GenreResponse.model_validate(genre) for genre in genres],
-        total=total.imag,
+        total=total,
         page=pagination.page,
         limit=pagination.limit,
     )
+
+
+@genres_router.post("")
+async def create_genre(
+        genre_data: GenreCreate,
+        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+) -> GenreResponse:
+    genre = await repo.add(**genre_data.model_dump())
+    return GenreResponse.model_validate(genre)
