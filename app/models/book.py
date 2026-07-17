@@ -5,9 +5,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from .base import Base
+from .associations import book_genres
 
 if TYPE_CHECKING:
     from .author import Author
+    from .genre import Genre
 
 
 class Book(Base):
@@ -22,3 +24,4 @@ class Book(Base):
     author: Mapped["Author"] = relationship(
         "Author", back_populates="books", lazy="joined"
     )
+    genres: Mapped[list["Genre"]] = relationship("Genre", secondary=book_genres)
