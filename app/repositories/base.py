@@ -35,11 +35,10 @@ class BaseRepository(Generic[T]):
         await self.session.delete(model_object)
         await self.session.flush()
 
-    async def update(self, object_model: T, **kwargs: Any) -> T:
+    async def update(self, object_model: T, **kwargs: Any) -> None:
         for key, value in kwargs.items():
             setattr(object_model, key, value)
         await self.session.flush()
-        return object_model
 
     async def count(self) -> int:
         query = select(func.count()).select_from(self.model)
