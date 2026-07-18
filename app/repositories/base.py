@@ -1,51 +1,45 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from sqlalchemy import func
 from typing import Generic, TypeVar, Sequence, Any
 
 from models import Base
 
-ModelType = TypeVar("ModelType", bound=Base)
+T = TypeVar("T", bound=Base)
 
 
-class BaseRepository(Generic[ModelType]):
-    model: type[ModelType]
+class BaseRepository(Generic[T]):
+    model: type[T]
 
     def __init__(self, db_session: AsyncSession) -> None:
         self.session: AsyncSession = db_session
 
-    async def add(self, **kwargs: Any) -> ModelType:
+    async def add(self, **kwargs: Any) -> T:
         model_object = self.model(**kwargs)
         self.session.add(model_object)
         await self.session.flush()
         return model_object
 
-    async def get_all(self, offset: int = 0, limit: int = 20) -> Sequence[ModelType]:
+    async def all(self, offset: int = 0, limit: int = 20) -> Sequence[T]:
         query = select(self.model).offset(offset).limit(limit)
         query_result = await self.session.execute(query)
         return query_result.scalars().all()
 
-    async def get_by_id(self, object_id: int) -> ModelType | None:
+    async def get(self, object_id: int) -> T | None:
         query = select(self.model).filter_by(id=object_id)
         query_result = await self.session.execute(query)
         model_object = query_result.scalar_one_or_none()
         return model_object
 
-    async def remove(self, object_id: int) -> int | None:
-        query = delete(self.model).filter_by(id=object_id).returning(self.model.id)
-        query_result = await self.session.execute(query)
+    async def remove(self, model_object: T) -> None:
+        await self.session.delete(model_object)
         await self.session.flush()
-        return query_result.scalar_one_or_none()
 
-    async def update(self, object_id: int, **kwargs: Any) -> ModelType | None:
-        model_object = await self.get_by_id(object_id)
-        if model_object is None:
-            return None
+    async def update(self, object_model: T, **kwargs: Any) -> T:
         for key, value in kwargs.items():
-            setattr(model_object, key, value)
+            setattr(object_model, key, value)
         await self.session.flush()
-        await self.session.refresh(model_object)
-        return model_object
+        return object_model
 
     async def count(self) -> int:
         query = select(func.count()).select_from(self.model)
