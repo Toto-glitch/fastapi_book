@@ -21,7 +21,7 @@ async def get_authors(
     pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
     repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> ListResponse[AuthorResponse]:
-    authors = await repo.get_all(offset=pagination.offset, limit=pagination.limit)
+    authors = await repo.all(offset=pagination.offset, limit=pagination.limit)
     total = await repo.count()
     return ListResponse(
         items=[AuthorResponse.model_validate(author) for author in authors],
@@ -53,10 +53,11 @@ async def get_author_books(
 async def remove_author(
     author_id: int, repo: Annotated[AuthorRepository, Depends(get_author_repository)]
 ) -> DeleteResponse:
-    returning_id = await repo.remove(author_id)
-    if returning_id is None:
+    author = await repo.get(author_id)
+    if author is None:
         raise HTTPException(status_code=404, detail="Author not found")
-    return DeleteResponse(message="Author removed", id=returning_id)
+    await repo.remove(author)
+    return DeleteResponse(message="Author removed", id=author_id)
 
 
 @authors_router.patch("/{author_id}")
@@ -65,17 +66,19 @@ async def update_author(
     new_data: AuthorUpdate,
     repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> AuthorResponse:
-    new_author = await repo.update(author_id, **new_data.model_dump(exclude_unset=True))
-    if new_author is None:
+    author = await repo.get(author_id)
+    if author is None:
         raise HTTPException(status_code=404, detail="Author not found")
-    return AuthorResponse.model_validate(new_author)
+    await repo.update(author, **new_data.model_dump(exclude_unset=True))
+    return AuthorResponse.model_validate(author)
+
 
 
 @authors_router.get("/{author_id}")
 async def get_author_by_id(
     author_id: int, repo: Annotated[AuthorRepository, Depends(get_author_repository)]
 ) -> AuthorResponse:
-    author = await repo.get_by_id(author_id)
+    author = await repo.get(author_id)
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")
     return AuthorResponse.model_validate(author)
