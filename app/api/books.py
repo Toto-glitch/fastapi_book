@@ -9,6 +9,7 @@ from schemas import (
     PaginationParams,
     ListResponse,
     DeleteResponse,
+    GenreResponse
 )
 from dependencies import get_book_repository, get_pagination_params
 
@@ -24,6 +25,22 @@ async def get_books(
     total = await repo.count()
     return ListResponse(
         items=[BookResponse.model_validate(book) for book in books],
+        total=total,
+        page=pagination.page,
+        limit=pagination.limit,
+    )
+
+
+@books_router.get("/{book_id}/genres")
+async def get_book_genres(
+        book_id: int,
+        pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+        repo: Annotated[BookRepository, Depends(get_book_repository)]
+) -> ListResponse[GenreResponse]:
+    genres = await repo.get_genres(book_id, offset=pagination.offset, limit=pagination.limit)
+    total = await repo.count_genres(book_id)
+    return ListResponse(
+        items=[GenreResponse.model_validate(genre) for genre in genres],
         total=total,
         page=pagination.page,
         limit=pagination.limit,
