@@ -23,6 +23,11 @@ class BookRepository(BaseRepository[Book]):
             book.genres.append(genre)
         await self.session.flush()
 
+    async def remove_genre(self, book: Book, genre: Genre) -> None:
+        if genre in book.genres:
+            book.genres.remove(genre)
+        await self.session.flush()
+
     async def get_genres(self, book_id: int, offset: int = 0, limit: int = 20) -> Sequence[Genre]:
         query = (
             select(Genre)
