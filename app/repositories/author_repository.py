@@ -23,9 +23,7 @@ class AuthorRepository(BaseRepository[Author]):
 
     async def count_books(self, author_id: int) -> int:
         query = (
-            select(func.count(Book.id))
-            .join(Book.author)
-            .filter(Author.id == author_id)
+            select(func.count(Book.id)).join(Book.author).filter(Author.id == author_id)
         )
         query_result = await self.session.execute(query)
         return query_result.scalar_one()

@@ -9,9 +9,13 @@ from schemas import (
     PaginationParams,
     ListResponse,
     DeleteResponse,
-    GenreResponse
+    GenreResponse,
 )
-from dependencies import get_book_repository, get_pagination_params, get_genre_repository
+from dependencies import (
+    get_book_repository,
+    get_pagination_params,
+    get_genre_repository,
+)
 
 books_router = APIRouter(prefix="/books", tags=["Books"])
 
@@ -33,11 +37,13 @@ async def get_books(
 
 @books_router.get("/{book_id}/genres")
 async def get_book_genres(
-        book_id: int,
-        pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
-        repo: Annotated[BookRepository, Depends(get_book_repository)]
+    book_id: int,
+    pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+    repo: Annotated[BookRepository, Depends(get_book_repository)],
 ) -> ListResponse[GenreResponse]:
-    genres = await repo.get_genres(book_id, offset=pagination.offset, limit=pagination.limit)
+    genres = await repo.get_genres(
+        book_id, offset=pagination.offset, limit=pagination.limit
+    )
     total = await repo.count_genres(book_id)
     return ListResponse(
         items=[GenreResponse.model_validate(genre) for genre in genres],
@@ -49,10 +55,10 @@ async def get_book_genres(
 
 @books_router.post("/{book_id}/genres/{genre_id}")
 async def add_genre(
-        book_id: int,
-        genre_id: int,
-        book_repo: Annotated[BookRepository, Depends(get_book_repository)],
-        genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)],
+    book_id: int,
+    genre_id: int,
+    book_repo: Annotated[BookRepository, Depends(get_book_repository)],
+    genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)],
 ) -> BookResponse:
     book = await book_repo.get_with_genres(book_id)
     if book is None:
@@ -68,10 +74,10 @@ async def add_genre(
 
 @books_router.delete("/{book_id}/genres/{genre_id}")
 async def remove_genre(
-        book_id: int,
-        genre_id: int,
-        book_repo: Annotated[BookRepository, Depends(get_book_repository)],
-        genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    book_id: int,
+    genre_id: int,
+    book_repo: Annotated[BookRepository, Depends(get_book_repository)],
+    genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)],
 ) -> BookResponse:
     book = await book_repo.get_with_genres(book_id)
     if book is None:

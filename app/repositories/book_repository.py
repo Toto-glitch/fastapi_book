@@ -10,11 +10,7 @@ class BookRepository(BaseRepository[Book]):
     model = Book
 
     async def get_with_genres(self, book_id: int) -> Book | None:
-        query = (
-            select(Book)
-            .filter_by(id=book_id)
-            .options(selectinload(Book.genres))
-        )
+        query = select(Book).filter_by(id=book_id).options(selectinload(Book.genres))
         query_result = await self.session.execute(query)
         return query_result.scalar_one_or_none()
 
@@ -28,7 +24,9 @@ class BookRepository(BaseRepository[Book]):
             book.genres.remove(genre)
         await self.session.flush()
 
-    async def get_genres(self, book_id: int, offset: int = 0, limit: int = 20) -> Sequence[Genre]:
+    async def get_genres(
+        self, book_id: int, offset: int = 0, limit: int = 20
+    ) -> Sequence[Genre]:
         query = (
             select(Genre)
             .join(Genre.books)
@@ -41,9 +39,7 @@ class BookRepository(BaseRepository[Book]):
 
     async def count_genres(self, book_id: int) -> int:
         query = (
-            select(func.count(Genre.id))
-            .join(Genre.books)
-            .filter(Book.id == book_id)
+            select(func.count(Genre.id)).join(Genre.books).filter(Book.id == book_id)
         )
         query_result = await self.session.execute(query)
         return query_result.scalar_one()

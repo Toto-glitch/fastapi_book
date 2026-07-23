@@ -2,7 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 
 from dependencies import get_pagination_params, get_genre_repository
-from schemas import PaginationParams, ListResponse, GenreResponse, GenreCreate, GenreUpdate, DeleteResponse
+from schemas import (
+    PaginationParams,
+    ListResponse,
+    GenreResponse,
+    GenreCreate,
+    GenreUpdate,
+    DeleteResponse,
+)
 from repositories import GenreRepository
 
 genres_router = APIRouter(prefix="/genres", tags=["Genres"])
@@ -10,8 +17,8 @@ genres_router = APIRouter(prefix="/genres", tags=["Genres"])
 
 @genres_router.get("")
 async def get_genres(
-        pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
-        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+    repo: Annotated[GenreRepository, Depends(get_genre_repository)],
 ) -> ListResponse[GenreResponse]:
     genres = await repo.all(offset=pagination.offset, limit=pagination.limit)
     total = await repo.count()
@@ -25,8 +32,8 @@ async def get_genres(
 
 @genres_router.post("")
 async def create_genre(
-        genre_data: GenreCreate,
-        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    genre_data: GenreCreate,
+    repo: Annotated[GenreRepository, Depends(get_genre_repository)],
 ) -> GenreResponse:
     genre = await repo.add(**genre_data.model_dump())
     return GenreResponse.model_validate(genre)
@@ -34,8 +41,7 @@ async def create_genre(
 
 @genres_router.get("/{genre_id}")
 async def get_genre_by_id(
-        genre_id: int,
-        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    genre_id: int, repo: Annotated[GenreRepository, Depends(get_genre_repository)]
 ) -> GenreResponse:
     genre = await repo.get(genre_id)
     if genre is None:
@@ -45,9 +51,9 @@ async def get_genre_by_id(
 
 @genres_router.patch("/{genre_id}")
 async def update_genre(
-        genre_id: int,
-        new_data: GenreUpdate,
-        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    genre_id: int,
+    new_data: GenreUpdate,
+    repo: Annotated[GenreRepository, Depends(get_genre_repository)],
 ) -> GenreResponse:
     genre = await repo.get(genre_id)
     if genre is None:
@@ -58,8 +64,7 @@ async def update_genre(
 
 @genres_router.delete("/{genre_id}")
 async def remove_genre(
-        genre_id: int,
-        repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    genre_id: int, repo: Annotated[GenreRepository, Depends(get_genre_repository)]
 ) -> DeleteResponse:
     genre = await repo.get(genre_id)
     if genre is None:

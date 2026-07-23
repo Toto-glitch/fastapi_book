@@ -19,6 +19,6 @@ async def get_book_repository(
 
 
 async def get_genre_repository(
-    session: Annotated[AsyncSession, Depends(get_session)]
+    session: Annotated[AsyncSession, Depends(get_session)],
 ) -> GenreRepository:
     return GenreRepository(session)

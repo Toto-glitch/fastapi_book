@@ -24,4 +24,6 @@ class Book(Base):
     author: Mapped["Author"] = relationship(
         "Author", back_populates="books", lazy="joined"
     )
-    genres: Mapped[list["Genre"]] = relationship("Genre", secondary=book_genres, back_populates="books")
+    genres: Mapped[list["Genre"]] = relationship(
+        "Genre", secondary=book_genres, back_populates="books"
+    )

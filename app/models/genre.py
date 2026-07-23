@@ -15,4 +15,6 @@ class Genre(Base):
     name: Mapped[str] = mapped_column(String(255), unique=True)
     description: Mapped[str | None] = mapped_column(Text)
 
-    books: Mapped[list["Book"]] = relationship("Book", secondary=book_genres, back_populates="genres")
+    books: Mapped[list["Book"]] = relationship(
+        "Book", secondary=book_genres, back_populates="genres"
+    )

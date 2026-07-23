@@ -73,7 +73,6 @@ async def update_author(
     return AuthorResponse.model_validate(author)
 
 
-
 @authors_router.get("/{author_id}")
 async def get_author_by_id(
     author_id: int, repo: Annotated[AuthorRepository, Depends(get_author_repository)]
