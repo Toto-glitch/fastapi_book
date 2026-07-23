@@ -18,6 +18,7 @@ class BaseRepository(Generic[T]):
         model_object = self.model(**kwargs)
         self.session.add(model_object)
         await self.session.flush()
+        await self.session.refresh(model_object)
         return model_object
 
     async def all(self, offset: int = 0, limit: int = 20) -> Sequence[T]:
