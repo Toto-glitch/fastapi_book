@@ -66,6 +66,25 @@ async def add_genre(
     return BookResponse.model_validate(book)
 
 
+@books_router.delete("/{book_id}/genres/{genre_id}")
+async def remove_genre(
+        book_id: int,
+        genre_id: int,
+        book_repo: Annotated[BookRepository, Depends(get_book_repository)],
+        genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+) -> BookResponse:
+    book = await book_repo.get_with_genres(book_id)
+    if book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    genre = await genre_repo.get(genre_id)
+    if genre is None:
+        raise HTTPException(status_code=404, detail="Genre not found")
+
+    await book_repo.remove_genre(book, genre)
+    return BookResponse.model_validate(book)
+
+
 @books_router.patch("/{book_id}")
 async def update_book(
     book_id: int,
