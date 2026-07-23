@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 
-from repositories import BookRepository
+from repositories import BookRepository, GenreRepository
 from schemas import (
     BookCreate,
     BookResponse,
@@ -11,7 +11,7 @@ from schemas import (
     DeleteResponse,
     GenreResponse
 )
-from dependencies import get_book_repository, get_pagination_params
+from dependencies import get_book_repository, get_pagination_params, get_genre_repository
 
 books_router = APIRouter(prefix="/books", tags=["Books"])
 
@@ -45,6 +45,25 @@ async def get_book_genres(
         page=pagination.page,
         limit=pagination.limit,
     )
+
+
+@books_router.post("/{book_id}/genres/{genre_id}")
+async def add_genre(
+        book_id: int,
+        genre_id: int,
+        book_repo: Annotated[BookRepository, Depends(get_book_repository)],
+        genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)],
+) -> BookResponse:
+    book = await book_repo.get_with_genres(book_id)
+    if book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    genre = await genre_repo.get(genre_id)
+    if genre is None:
+        raise HTTPException(status_code=404, detail="Genre not found")
+
+    await book_repo.add_genre(book, genre)
+    return BookResponse.model_validate(book)
 
 
 @books_router.patch("/{book_id}")
