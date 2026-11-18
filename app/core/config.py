@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     db: DatabaseConfig
 
     model_config = SettingsConfigDict(
-        env_file=(".env.example", ".env"),
+        env_file=".env",
         case_sensitive=False,
         env_prefix="APP__",
         env_nested_delimiter="__",
