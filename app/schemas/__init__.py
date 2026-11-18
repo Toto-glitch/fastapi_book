@@ -3,6 +3,7 @@ from .book import BookCreate, BookResponse, BookUpdate
 from .common import DeleteResponse, ListResponse, PaginationParams
 from .genre import GenreCreate, GenreResponse, GenreUpdate
 
+BookResponse.model_rebuild()
 __all__ = (
     "AuthorCreate",
     "AuthorResponse",
