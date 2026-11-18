@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
 
-from dependencies import get_pagination_params, get_genre_repository
-from schemas import (
-    PaginationParams,
-    ListResponse,
-    GenreResponse,
-    GenreCreate,
-    GenreUpdate,
-    DeleteResponse,
-)
+from dependencies import get_genre_repository, get_pagination_params
+from fastapi import APIRouter, Depends, HTTPException, status
 from repositories import GenreRepository
+from schemas import (
+    DeleteResponse,
+    GenreCreate,
+    GenreResponse,
+    GenreUpdate,
+    ListResponse,
+    PaginationParams,
+)
 
 genres_router = APIRouter(prefix="/genres", tags=["Genres"])
 

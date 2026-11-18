@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Table, ForeignKey
+from sqlalchemy import Column, ForeignKey, Table
+
 from .base import Base
 
 book_genres = Table(

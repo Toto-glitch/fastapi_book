@@ -1,9 +1,9 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy import func
-from typing import Generic, TypeVar, Sequence, Any
+from collections.abc import Sequence
+from typing import Any, Generic, TypeVar
 
 from models import Base
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 T = TypeVar("T", bound=Base)
 

@@ -1,17 +1,17 @@
-from fastapi import Depends, APIRouter, HTTPException, status
 from typing import Annotated
 
+from dependencies import get_author_repository, get_pagination_params
+from fastapi import APIRouter, Depends, HTTPException, status
 from repositories import AuthorRepository
 from schemas import (
-    AuthorResponse,
     AuthorCreate,
+    AuthorResponse,
     AuthorUpdate,
     BookResponse,
-    PaginationParams,
-    ListResponse,
     DeleteResponse,
+    ListResponse,
+    PaginationParams,
 )
-from dependencies import get_author_repository, get_pagination_params
 
 authors_router = APIRouter(prefix="/authors", tags=["Authors"])
 

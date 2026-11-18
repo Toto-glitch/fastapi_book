@@ -1,9 +1,10 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Text
 from typing import TYPE_CHECKING
 
-from .base import Base
+from sqlalchemy import String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .associations import book_genres
+from .base import Base
 
 if TYPE_CHECKING:
     from .book import Book

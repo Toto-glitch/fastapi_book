@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey, func, Numeric
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from .base import Base
+from sqlalchemy import ForeignKey, Numeric, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .associations import book_genres
+from .base import Base
 
 if TYPE_CHECKING:
     from .author import Author

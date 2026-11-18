@@ -1,6 +1,6 @@
-from fastapi import Query
 from typing import Annotated
 
+from fastapi import Query
 from schemas import PaginationParams
 
 

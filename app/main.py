@@ -1,10 +1,10 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
-from fastapi import FastAPI
-import uvicorn
 
-from core import settings, close_connections
+import uvicorn
 from api import main_router
+from core import close_connections, settings
+from fastapi import FastAPI
 
 
 @asynccontextmanager

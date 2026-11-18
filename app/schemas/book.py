@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field, ConfigDict
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
 from typing import TYPE_CHECKING
+
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
     from .author import AuthorResponse

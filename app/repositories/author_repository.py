@@ -1,8 +1,9 @@
-from sqlalchemy import select, func
-from typing import Sequence
+from collections.abc import Sequence
+
+from models import Author, Book
+from sqlalchemy import func, select
 
 from .base import BaseRepository
-from models import Author, Book
 
 
 class AuthorRepository(BaseRepository[Author]):

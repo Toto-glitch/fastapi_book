@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
 from typing import Generic, TypeVar
+
+from pydantic import BaseModel, Field
 
 T = TypeVar("T")
 

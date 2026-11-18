@@ -1,9 +1,10 @@
-from sqlalchemy import select, func
+from collections.abc import Sequence
+
+from models import Book, Genre
+from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
-from typing import Sequence
 
 from .base import BaseRepository
-from models import Book, Genre
 
 
 class BookRepository(BaseRepository[Book]):

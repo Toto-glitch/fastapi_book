@@ -1,9 +1,9 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
 from typing import Annotated
 
 from core import get_session
+from fastapi import Depends
 from repositories import AuthorRepository, BookRepository, GenreRepository
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_author_repository(
