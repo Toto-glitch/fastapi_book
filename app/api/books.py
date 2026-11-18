@@ -1,10 +1,10 @@
 from typing import Annotated
 
 from dependencies import (
+    PaginationDep,
     get_author_repository,
     get_book_repository,
     get_genre_repository,
-    get_pagination_params,
 )
 from fastapi import APIRouter, Depends, HTTPException, status
 from repositories import AuthorRepository, BookRepository, GenreRepository
@@ -15,7 +15,6 @@ from schemas import (
     DeleteResponse,
     GenreResponse,
     ListResponse,
-    PaginationParams,
 )
 
 books_router = APIRouter(prefix="/books", tags=["Books"])
@@ -23,7 +22,7 @@ books_router = APIRouter(prefix="/books", tags=["Books"])
 
 @books_router.get("")
 async def get_books(
-    pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+    pagination: PaginationDep,
     repo: Annotated[BookRepository, Depends(get_book_repository)],
 ) -> ListResponse[BookResponse]:
     books = await repo.all(offset=pagination.offset, limit=pagination.limit)
@@ -39,7 +38,7 @@ async def get_books(
 @books_router.get("/{book_id}/genres")
 async def get_book_genres(
     book_id: int,
-    pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+    pagination: PaginationDep,
     repo: Annotated[BookRepository, Depends(get_book_repository)],
 ) -> ListResponse[GenreResponse]:
     book = await repo.get(book_id)

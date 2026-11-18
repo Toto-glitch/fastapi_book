@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from dependencies import get_genre_repository, get_pagination_params
+from dependencies import PaginationDep, get_genre_repository
 from fastapi import APIRouter, Depends, HTTPException, status
 from repositories import GenreRepository
 from schemas import (
@@ -9,7 +9,6 @@ from schemas import (
     GenreResponse,
     GenreUpdate,
     ListResponse,
-    PaginationParams,
 )
 
 genres_router = APIRouter(prefix="/genres", tags=["Genres"])
@@ -17,7 +16,7 @@ genres_router = APIRouter(prefix="/genres", tags=["Genres"])
 
 @genres_router.get("")
 async def get_genres(
-    pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
+    pagination: PaginationDep,
     repo: Annotated[GenreRepository, Depends(get_genre_repository)],
 ) -> ListResponse[GenreResponse]:
     genres = await repo.all(offset=pagination.offset, limit=pagination.limit)

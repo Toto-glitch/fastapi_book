@@ -1,11 +1,6 @@
 from typing import Annotated
 
-from fastapi import Query
+from fastapi import Depends
 from schemas import PaginationParams
 
-
-def get_pagination_params(
-    page: Annotated[int, Query(ge=1)] = 1,
-    limit: Annotated[int, Query(ge=1, le=100)] = 10,
-) -> PaginationParams:
-    return PaginationParams(page=page, limit=limit)
+PaginationDep = Annotated[PaginationParams, Depends()]
