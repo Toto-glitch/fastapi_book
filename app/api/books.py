@@ -1,12 +1,13 @@
 from typing import Annotated
 
 from dependencies import (
+    get_author_repository,
     get_book_repository,
     get_genre_repository,
     get_pagination_params,
 )
 from fastapi import APIRouter, Depends, HTTPException, status
-from repositories import BookRepository, GenreRepository
+from repositories import AuthorRepository, BookRepository, GenreRepository
 from schemas import (
     BookCreate,
     BookResponse,
@@ -127,7 +128,12 @@ async def get_book_by_id(
 
 @books_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_book(
-    book_data: BookCreate, repo: Annotated[BookRepository, Depends(get_book_repository)]
+    book_data: BookCreate,
+    book_repo: Annotated[BookRepository, Depends(get_book_repository)],
+    author_repo: Annotated[AuthorRepository, Depends(get_author_repository)]
 ) -> BookResponse:
-    book = await repo.add(**book_data.model_dump())
+    author = await author_repo.get(book_data.author_id)
+    if author is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
+    book = await book_repo.add(**book_data.model_dump())
     return BookResponse.model_validate(book)
