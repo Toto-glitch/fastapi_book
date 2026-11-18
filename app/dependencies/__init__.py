@@ -1,13 +1,9 @@
 from .pagination import PaginationDep
-from .repositories import (
-    get_author_repository,
-    get_book_repository,
-    get_genre_repository,
-)
+from .repos import AuthorRepositoryDep, BookRepositoryDep, GenreRepositoryDep
 
 __all__ = (
-    "PaginationDep",
-    "get_author_repository",
-    "get_book_repository",
-    "get_genre_repository"
+    "AuthorRepositoryDep",
+    "BookRepositoryDep",
+    "GenreRepositoryDep",
+    "PaginationDep"
 )

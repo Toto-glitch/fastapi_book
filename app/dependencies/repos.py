@@ -22,3 +22,8 @@ async def get_genre_repository(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> GenreRepository:
     return GenreRepository(session)
+
+
+AuthorRepositoryDep = Annotated[AuthorRepository, Depends(get_author_repository)]
+BookRepositoryDep = Annotated[BookRepository, Depends(get_book_repository)]
+GenreRepositoryDep = Annotated[GenreRepository, Depends(get_genre_repository)]

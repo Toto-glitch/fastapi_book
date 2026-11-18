@@ -1,13 +1,10 @@
-from typing import Annotated
-
 from dependencies import (
+    AuthorRepositoryDep,
+    BookRepositoryDep,
+    GenreRepositoryDep,
     PaginationDep,
-    get_author_repository,
-    get_book_repository,
-    get_genre_repository,
 )
-from fastapi import APIRouter, Depends, HTTPException, status
-from repositories import AuthorRepository, BookRepository, GenreRepository
+from fastapi import APIRouter, HTTPException, status
 from schemas import (
     BookCreate,
     BookResponse,
@@ -23,7 +20,7 @@ books_router = APIRouter(prefix="/books", tags=["Books"])
 @books_router.get("")
 async def get_books(
     pagination: PaginationDep,
-    repo: Annotated[BookRepository, Depends(get_book_repository)],
+    repo: BookRepositoryDep,
 ) -> ListResponse[BookResponse]:
     books = await repo.all(offset=pagination.offset, limit=pagination.limit)
     total = await repo.count()
@@ -39,7 +36,7 @@ async def get_books(
 async def get_book_genres(
     book_id: int,
     pagination: PaginationDep,
-    repo: Annotated[BookRepository, Depends(get_book_repository)],
+    repo: BookRepositoryDep,
 ) -> ListResponse[GenreResponse]:
     book = await repo.get(book_id)
     if book is None:
@@ -60,8 +57,8 @@ async def get_book_genres(
 async def add_genre(
     book_id: int,
     genre_id: int,
-    book_repo: Annotated[BookRepository, Depends(get_book_repository)],
-    genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)],
+    book_repo: BookRepositoryDep,
+    genre_repo: GenreRepositoryDep,
 ) -> BookResponse:
     book = await book_repo.get_with_genres(book_id)
     if book is None:
@@ -79,8 +76,8 @@ async def add_genre(
 async def remove_genre(
     book_id: int,
     genre_id: int,
-    book_repo: Annotated[BookRepository, Depends(get_book_repository)],
-    genre_repo: Annotated[GenreRepository, Depends(get_genre_repository)],
+    book_repo: BookRepositoryDep,
+    genre_repo: GenreRepositoryDep,
 ) -> BookResponse:
     book = await book_repo.get_with_genres(book_id)
     if book is None:
@@ -98,7 +95,7 @@ async def remove_genre(
 async def update_book(
     book_id: int,
     new_data: BookUpdate,
-    repo: Annotated[BookRepository, Depends(get_book_repository)],
+    repo: BookRepositoryDep,
 ) -> BookResponse:
     book = await repo.get(book_id)
     if book is None:
@@ -109,7 +106,7 @@ async def update_book(
 
 @books_router.delete("/{book_id}")
 async def remove_book(
-    book_id: int, repo: Annotated[BookRepository, Depends(get_book_repository)]
+    book_id: int, repo: BookRepositoryDep
 ) -> DeleteResponse:
     book = await repo.get(book_id)
     if book is None:
@@ -120,7 +117,7 @@ async def remove_book(
 
 @books_router.get("/{book_id}")
 async def get_book_by_id(
-    book_id: int, repo: Annotated[BookRepository, Depends(get_book_repository)]
+    book_id: int, repo: BookRepositoryDep
 ) -> BookResponse:
     book = await repo.get(book_id)
     if book is None:
@@ -131,8 +128,8 @@ async def get_book_by_id(
 @books_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_book(
     book_data: BookCreate,
-    book_repo: Annotated[BookRepository, Depends(get_book_repository)],
-    author_repo: Annotated[AuthorRepository, Depends(get_author_repository)]
+    book_repo: BookRepositoryDep,
+    author_repo: AuthorRepositoryDep
 ) -> BookResponse:
     author = await author_repo.get(book_data.author_id)
     if author is None:

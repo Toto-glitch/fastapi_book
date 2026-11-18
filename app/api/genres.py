@@ -1,8 +1,5 @@
-from typing import Annotated
-
-from dependencies import PaginationDep, get_genre_repository
-from fastapi import APIRouter, Depends, HTTPException, status
-from repositories import GenreRepository
+from dependencies import GenreRepositoryDep, PaginationDep
+from fastapi import APIRouter, HTTPException, status
 from schemas import (
     DeleteResponse,
     GenreCreate,
@@ -17,7 +14,7 @@ genres_router = APIRouter(prefix="/genres", tags=["Genres"])
 @genres_router.get("")
 async def get_genres(
     pagination: PaginationDep,
-    repo: Annotated[GenreRepository, Depends(get_genre_repository)],
+    repo: GenreRepositoryDep,
 ) -> ListResponse[GenreResponse]:
     genres = await repo.all(offset=pagination.offset, limit=pagination.limit)
     total = await repo.count()
@@ -32,7 +29,7 @@ async def get_genres(
 @genres_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_genre(
     genre_data: GenreCreate,
-    repo: Annotated[GenreRepository, Depends(get_genre_repository)],
+    repo: GenreRepositoryDep,
 ) -> GenreResponse:
     genre = await repo.add(**genre_data.model_dump())
     return GenreResponse.model_validate(genre)
@@ -40,7 +37,7 @@ async def create_genre(
 
 @genres_router.get("/{genre_id}")
 async def get_genre_by_id(
-    genre_id: int, repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    genre_id: int, repo: GenreRepositoryDep
 ) -> GenreResponse:
     genre = await repo.get(genre_id)
     if genre is None:
@@ -52,7 +49,7 @@ async def get_genre_by_id(
 async def update_genre(
     genre_id: int,
     new_data: GenreUpdate,
-    repo: Annotated[GenreRepository, Depends(get_genre_repository)],
+    repo: GenreRepositoryDep,
 ) -> GenreResponse:
     genre = await repo.get(genre_id)
     if genre is None:
@@ -63,7 +60,7 @@ async def update_genre(
 
 @genres_router.delete("/{genre_id}")
 async def remove_genre(
-    genre_id: int, repo: Annotated[GenreRepository, Depends(get_genre_repository)]
+    genre_id: int, repo: GenreRepositoryDep
 ) -> DeleteResponse:
     genre = await repo.get(genre_id)
     if genre is None:

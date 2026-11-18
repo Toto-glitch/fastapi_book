@@ -1,5 +1,5 @@
-from .author_repository import AuthorRepository
-from .book_repository import BookRepository
-from .genre_repository import GenreRepository
+from .author import AuthorRepository
+from .book import BookRepository
+from .genre import GenreRepository
 
 __all__ = ("AuthorRepository", "BookRepository", "GenreRepository")
