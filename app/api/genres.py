@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
 
 from dependencies import get_pagination_params, get_genre_repository
@@ -30,7 +30,7 @@ async def get_genres(
     )
 
 
-@genres_router.post("")
+@genres_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_genre(
     genre_data: GenreCreate,
     repo: Annotated[GenreRepository, Depends(get_genre_repository)],
@@ -45,7 +45,7 @@ async def get_genre_by_id(
 ) -> GenreResponse:
     genre = await repo.get(genre_id)
     if genre is None:
-        raise HTTPException(status_code=404, detail="Genre not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
     return GenreResponse.model_validate(genre)
 
 
@@ -57,7 +57,7 @@ async def update_genre(
 ) -> GenreResponse:
     genre = await repo.get(genre_id)
     if genre is None:
-        raise HTTPException(status_code=404, detail="Genre not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
     await repo.update(genre, **new_data.model_dump(exclude_unset=True))
     return GenreResponse.model_validate(genre)
 
@@ -68,6 +68,6 @@ async def remove_genre(
 ) -> DeleteResponse:
     genre = await repo.get(genre_id)
     if genre is None:
-        raise HTTPException(status_code=404, detail="Genre not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
     await repo.remove(genre)
     return DeleteResponse(message="Genre removed", id=genre_id)

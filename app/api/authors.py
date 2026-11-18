@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException, status
 from typing import Annotated
 
 from repositories import AuthorRepository
@@ -55,7 +55,7 @@ async def remove_author(
 ) -> DeleteResponse:
     author = await repo.get(author_id)
     if author is None:
-        raise HTTPException(status_code=404, detail="Author not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
     await repo.remove(author)
     return DeleteResponse(message="Author removed", id=author_id)
 
@@ -68,7 +68,7 @@ async def update_author(
 ) -> AuthorResponse:
     author = await repo.get(author_id)
     if author is None:
-        raise HTTPException(status_code=404, detail="Author not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
     await repo.update(author, **new_data.model_dump(exclude_unset=True))
     return AuthorResponse.model_validate(author)
 
@@ -79,11 +79,11 @@ async def get_author_by_id(
 ) -> AuthorResponse:
     author = await repo.get(author_id)
     if not author:
-        raise HTTPException(status_code=404, detail="Author not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
     return AuthorResponse.model_validate(author)
 
 
-@authors_router.post("")
+@authors_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_author(
     author_data: AuthorCreate,
     repo: Annotated[AuthorRepository, Depends(get_author_repository)],

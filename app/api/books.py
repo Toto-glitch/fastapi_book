@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
 
 from repositories import BookRepository, GenreRepository
@@ -62,11 +62,11 @@ async def add_genre(
 ) -> BookResponse:
     book = await book_repo.get_with_genres(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
     genre = await genre_repo.get(genre_id)
     if genre is None:
-        raise HTTPException(status_code=404, detail="Genre not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
 
     await book_repo.add_genre(book, genre)
     return BookResponse.model_validate(book)
@@ -81,11 +81,11 @@ async def remove_genre(
 ) -> BookResponse:
     book = await book_repo.get_with_genres(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
     genre = await genre_repo.get(genre_id)
     if genre is None:
-        raise HTTPException(status_code=404, detail="Genre not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Genre not found")
 
     await book_repo.remove_genre(book, genre)
     return BookResponse.model_validate(book)
@@ -99,7 +99,7 @@ async def update_book(
 ) -> BookResponse:
     book = await repo.get(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
     await repo.update(book, **new_data.model_dump(exclude_unset=True))
     return BookResponse.model_validate(book)
 
@@ -110,7 +110,7 @@ async def remove_book(
 ) -> DeleteResponse:
     book = await repo.get(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
     await repo.remove(book)
     return DeleteResponse(message="Book removed", id=book_id)
 
@@ -121,11 +121,11 @@ async def get_book_by_id(
 ) -> BookResponse:
     book = await repo.get(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
     return BookResponse.model_validate(book)
 
 
-@books_router.post("")
+@books_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_book(
     book_data: BookCreate, repo: Annotated[BookRepository, Depends(get_book_repository)]
 ) -> BookResponse:
