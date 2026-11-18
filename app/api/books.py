@@ -42,6 +42,9 @@ async def get_book_genres(
     pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
     repo: Annotated[BookRepository, Depends(get_book_repository)],
 ) -> ListResponse[GenreResponse]:
+    book = await repo.get(book_id)
+    if book is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
     genres = await repo.get_genres(
         book_id, offset=pagination.offset, limit=pagination.limit
     )

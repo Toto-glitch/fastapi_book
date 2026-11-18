@@ -37,6 +37,9 @@ async def get_author_books(
     pagination: Annotated[PaginationParams, Depends(get_pagination_params)],
     repo: Annotated[AuthorRepository, Depends(get_author_repository)],
 ) -> ListResponse[BookResponse]:
+    author = await repo.get(author_id)
+    if author is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Author not found")
     books = await repo.get_books(
         author_id, offset=pagination.offset, limit=pagination.limit
     )
